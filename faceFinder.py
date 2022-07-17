@@ -44,11 +44,12 @@ for file in listOfFiles:
 
 		boxes = face_recognition.face_locations(rgb,
 		model="hog")
-		for box in boxes:
-			top, right, bottom, left = box
-			print("A face is located at pixel location Top: {}, Left: {}, Bottom: {}, Right: {}".format(top, left, bottom, right))
-			cv2.rectangle(image, (left, top), (right, bottom), (0, 255, 0), 2)
+		if len(boxes)>0:
+			for box in boxes:
+				top, right, bottom, left = box
+				print("A face is located at pixel location Top: {}, Left: {}, Bottom: {}, Right: {}".format(top, left, bottom, right))
+				cv2.rectangle(image, (left, top), (right, bottom), (0, 255, 0), 2)
 
-		image = ResizeWithAspectRatio(image, height=800)
-		cv2.imshow("Image", image)
-		cv2.waitKey(0)
+			image = ResizeWithAspectRatio(image, height=800)
+			cv2.imshow("Image", image)
+			cv2.waitKey(0)
