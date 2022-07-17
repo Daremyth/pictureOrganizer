@@ -9,7 +9,8 @@ import hashlib
 import sqlite3
 import os
 import pathlib
-os.add_dll_directory("F:\\Organizer\\vcpkg\\installed\\x64-windows\\bin")
+import platform
+#os.add_dll_directory("F:\\Organizer\\vcpkg\\installed\\x64-windows\\bin")
 import pyheif
 from tqdm import tqdm
 
@@ -37,7 +38,7 @@ def main():
 	heicFound = 0
 	duplicatesFound = 0
 
-	dirName = "F:\\Google Photos\\Takeout\\Takeout\\Google Photos\\Photos from 2019"
+	dirName = "/Users/marcus/Downloads/Pictures/"
 	
 	# Get the list of all files in directory tree at given path
 	listOfFiles = list()
@@ -68,10 +69,11 @@ def main():
 				is_image = True
 			except UnidentifiedImageError:
 				is_image = False
-				
+				#TODO: Process movies somehow
 				if fileExtension == '.MOV':
 					moviesFound = moviesFound+1
 				if fileExtension == '.HEIC':
+					#Convert HEIC
 					heif_file = pyheif.read(elem)
 					print(heif_file.metadata)
 					image = Image.frombytes(
@@ -97,7 +99,10 @@ def main():
 			if len(rows)==0:
 				filesProcessed = filesProcessed+1
 				fileExtension = pathlib.Path(elem).suffix
-				creationDate = datetime.datetime.fromtimestamp(os.path.getctime(elem))
+				if platform.system() == 'Darwin':
+					creationDate = datetime.datetime.fromtimestamp(os.stat(elem).st_birthtime)
+				else: 
+					creationDate = datetime.datetime.fromtimestamp(os.path.getctime(elem))
 				modifyDate = datetime.datetime.fromtimestamp(os.path.getmtime(elem))
 				#No matching path and/or file hash, let's do the expensive stuff
 				if is_image:
